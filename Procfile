@@ -1,1 +1,1 @@
-main: urbanobot
+web: urbanobot
