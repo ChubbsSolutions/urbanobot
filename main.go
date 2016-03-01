@@ -29,7 +29,6 @@ func main() {
 //GetWord
 func getWord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
-	fmt.Println("Ping!")
 
 	word := r.URL.Query().Get("text")
 
@@ -41,10 +40,12 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 	if fmt.Sprintf("%s", err) == "NOTFOUND" {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Word not Found.\n"))
+		log.Fatal("Word " + word + " not found.")
 		return
 	}
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal("Error!")
 		return
 	}
 	log.Print("Returning definition of " + word + " to " + slackUser + " from team " + slackTeam + " on channel " + slackChannel)
