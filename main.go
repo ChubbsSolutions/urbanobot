@@ -35,7 +35,7 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 	slackUser := r.URL.Query().Get("user_name")
 	slackChannel := r.URL.Query().Get("channel_name")
 	slackTeam := r.URL.Query().Get("team_id")
-	log.Print("Request received from " + slackUser + ", from team " + slackTeam + ", on channel " + slackChannel)
+	log.Print("Request received for " + word + " from " + slackUser + ", from team " + slackTeam + ", on channel " + slackChannel)
 	wordDefinition, err := getWordDefinition(word)
 	if fmt.Sprintf("%s", err) == "NOTFOUND" {
 		w.WriteHeader(http.StatusNotFound)
