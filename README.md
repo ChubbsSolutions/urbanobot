@@ -1,6 +1,6 @@
 # urbanobot
 
-[![Build Status](https://travis-ci.org/urbanobot/urbanobot.png)](https://travis-ci.org/iarenzana/urbanobot)
+[![Build Status](https://travis-ci.org/iarenzana/urbanobot.png)](https://travis-ci.org/iarenzana/urbanobot)
 
 Integrates Urban Dictionary right into Slack
 
