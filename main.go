@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -18,8 +19,11 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/v1/word", getWord)
 	log.Print("Starting up...")
-	log.Fatal(http.ListenAndServe(":60000", router))
-
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
 //GetWord
