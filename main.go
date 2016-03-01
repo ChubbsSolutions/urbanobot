@@ -28,7 +28,8 @@ func main() {
 
 //GetWord
 func getWord(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
+	//	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "application/json")
 
 	word := r.URL.Query().Get("text")
 
@@ -50,7 +51,17 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Print("Returning definition of " + word + " to " + slackUser + " from team " + slackTeam + " on channel " + slackChannel)
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(wordDefinition.Definition))
+	response := objects.SlackResponse{}
+	response.Text = wordDefinition.Definition
+	response.ResponseType = "in_channel"
+	//	w.Write([]byte(wordDefinition.Definition))
+	resp, err := json.Marshal(response)
+	if err != nil {
+		log.Println("Error Marshalling response!")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Write(resp)
 }
 
 func getWordDefinition(wordToDefine string) (objects.WordData, error) {

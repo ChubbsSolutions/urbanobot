@@ -17,3 +17,8 @@ type WordData struct {
 	ThumbsDown  int    `json:"thumbs_down"`
 	Word        string `json:"word"`
 }
+
+type SlackResponse struct {
+	Text         string `json:"text"`
+	ResponseType string `json:"response_type"`
+}
