@@ -17,7 +17,7 @@ git clone https://github.com/iarenzana/urbanobot
 cd urbanobot
 go get
 go build
-PORT=60000 ./urbano.go
+PORT=60000 ./urbanobot.go
 ```
 
 ##Usage
