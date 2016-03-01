@@ -38,14 +38,14 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 	log.Print("Request received for " + word + " from " + slackUser + ", from team " + slackTeam + ", on channel " + slackChannel)
 	wordDefinition, err := getWordDefinition(word)
 	if fmt.Sprintf("%s", err) == "NOTFOUND" {
+		log.Println("Word " + word + " not found.")
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Word not Found.\n"))
-		log.Fatal("Word " + word + " not found.")
 		return
 	}
 	if err != nil {
+		log.Println("Error!")
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal("Error!")
 		return
 	}
 	log.Print("Returning definition of " + word + " to " + slackUser + " from team " + slackTeam + " on channel " + slackChannel)
