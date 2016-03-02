@@ -4,6 +4,9 @@ package objects
 type WordDataSlice struct {
 	List []WordData `json:"list"`
 }
+type Response struct {
+	Response string `json:"response"`
+}
 
 //WordData represents the JSON struct sent by Urban Dictionary with the word.
 type WordData struct {

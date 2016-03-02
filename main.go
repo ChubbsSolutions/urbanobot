@@ -42,7 +42,15 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 	if fmt.Sprintf("%s", err) == "NOTFOUND" {
 		log.Println("Word " + word + " not found.")
 		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Word not Found.\n"))
+		response := objects.Response{Response: "Word not Found"}
+		resp, err := json.Marshal(response)
+		if err != nil {
+			log.Println("Error Marshalling response!")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(resp)
 		return
 	}
 	if err != nil {
@@ -51,6 +59,7 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Print("Returning definition of " + word + " to " + slackUser + " from team " + slackTeam + " on channel " + slackChannel)
+
 	w.WriteHeader(http.StatusOK)
 	response := objects.SlackResponse{}
 	response.Text = wordDefinition.Definition
