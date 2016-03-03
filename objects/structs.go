@@ -5,7 +5,8 @@ type WordDataSlice struct {
 	List []WordData `json:"list"`
 }
 type Response struct {
-	Response string `json:"response"`
+	Response   string `json:"response"`
+	BotVersion string `json:"bot_version"`
 }
 
 //WordData represents the JSON struct sent by Urban Dictionary with the word.
@@ -24,4 +25,5 @@ type WordData struct {
 type SlackResponse struct {
 	Text         string `json:"text"`
 	ResponseType string `json:"response_type"`
+	BotVersion   string `json:"bot_version"`
 }

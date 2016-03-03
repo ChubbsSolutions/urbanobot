@@ -14,16 +14,22 @@ import (
 	"github.com/iarenzana/urbanobot/objects"
 )
 
+const version = "0.4"
+
 func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/v1/word", getWord)
-	log.Print("Starting up...")
+	log.Printf("Starting up urbanobot %v...\n", version)
 	port := os.Getenv("PORT")
+
 	if port == "" {
 		log.Fatal("$PORT must be set")
 	}
+
 	log.Fatal(http.ListenAndServe(":"+port, router))
+
+	log.Print("Server started on port " + port)
 }
 
 //GetWord
@@ -42,7 +48,8 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 	if fmt.Sprintf("%s", err) == "NOTFOUND" {
 		log.Println("Word " + word + " not found.")
 		w.WriteHeader(http.StatusNotFound)
-		response := objects.Response{Response: "Word not Found"}
+
+		response := objects.Response{Response: "Word not Found", BotVersion: version}
 		resp, err := json.Marshal(response)
 		if err != nil {
 			log.Println("Error Marshalling response!")
@@ -53,8 +60,9 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 		w.Write(resp)
 		return
 	}
+
 	if err != nil {
-		log.Println("Error!")
+		log.Print("Error - %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -64,6 +72,8 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 	response := objects.SlackResponse{}
 	response.Text = wordDefinition.Definition
 	response.ResponseType = "in_channel"
+	response.BotVersion = version
+
 	//	w.Write([]byte(wordDefinition.Definition))
 	resp, err := json.Marshal(response)
 	if err != nil {
