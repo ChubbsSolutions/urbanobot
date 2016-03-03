@@ -1,0 +1,15 @@
+[Unit]
+Description=Urbanobot - Slack Integration with Urban Dictionary
+After=network.target
+
+[Service]
+User=%i
+Environment=STNORESTART=yes
+Environment=PORT=61000
+ExecStart=/home/%i/bin/urbanobot
+Restart=on-failure
+SuccessExitStatus=2 3 4
+RestartForceExitStatus=3 4
+
+[Install]
+WantedBy=multi-user.target
