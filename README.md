@@ -24,6 +24,6 @@ Usage
 --
 Run this service in Heroku (Procfile provided). Go to your Custom Integrations, Slash Commands on Slack and create a GET that points to https://[YOUR_HOST]/v1/word.
 
-##About
-
+About
+--
 Crafted with :heart: in Indiana by [Chubbs Solutions] (http://chubbs.solutions).
