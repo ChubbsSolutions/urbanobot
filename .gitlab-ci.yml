@@ -34,6 +34,10 @@ install-go:
     - cd $CURRENT_BUILD_PATH
 
 #
+#	Get Dependencies
+#
+    - go get
+#
 #	Test
 #
     - go test
