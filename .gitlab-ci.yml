@@ -43,8 +43,8 @@ build-project:
   stage: build
   script:
     - cd $CURRENT_BUILD_PATH
-    - go version
     - /root/golang/go/bin/go version
+    - go version
     - go build
 
 test-project:
