@@ -1,6 +1,8 @@
 stages:
   - install-environment
-
+  - test
+  - build
+  
 install-go:
   stage: install-environment
   script:
@@ -23,10 +25,14 @@ install-go:
 #
 #	Test
 #
+  stage: test
+  script:
     - go test
 #
 #	Build
 #
+  stage: build
+  script:
     - pwd
     - go build
 
