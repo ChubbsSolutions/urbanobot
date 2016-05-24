@@ -25,14 +25,14 @@ install-go:
 #
 #	Test
 #
-test-go
+test-go:
   stage: test
   script:
     - go test
 #
 #	Build
 #
-build-go
+build-go:
   stage: build
   script:
     - pwd
