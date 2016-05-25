@@ -3,7 +3,7 @@ stages:
   - test
   - build
 
-install-go:
+test-n-build-urbano:
   stage: install-environment
   script:
     - export GO_VERSION=1.6.1
@@ -25,16 +25,10 @@ install-go:
 #
 #	Test
 #
-test-go:
-  stage: test
-  script:
     - go test
 #
 #	Build
 #
-build-go:
-  stage: build
-  script:
     - pwd
     - go build
 
