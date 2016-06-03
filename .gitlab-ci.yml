@@ -6,7 +6,7 @@ stages:
 test-n-build-urbano:
   stage: install-environment
   script:
-    - export GO_VERSION=1.6.1
+    - export GO_VERSION=1.6.2
     - export PROJECT=urbanobot
     - rm -rf $HOME/golang
     - rm -rf $(pwd)/src
