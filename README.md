@@ -10,7 +10,7 @@ Download the software
 
 Compile and run the source
 --
-Requires Go 1.5 or newer (earlier versions untested). Remember to set the GOPATH variable.
+Requires Go 1.6 or newer (earlier versions untested). Remember to set the GOPATH variable.
 
 ```
 git clone https://github.com/iarenzana/urbanobot

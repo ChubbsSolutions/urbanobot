@@ -11,10 +11,10 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/iarenzana/urbanobot/objects"
+	"gitlab.com/iarenzana/urbanobot/objects"
 )
 
-const version = "0.5"
+const version = "0.6"
 
 func main() {
 
