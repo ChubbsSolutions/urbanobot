@@ -10,14 +10,13 @@ Download the software
 
 Compile and run the source
 --
-Requires Go 1.6 or newer (earlier versions untested). Remember to set the GOPATH variable.
+Remember to set the GOPATH variable.
 
 ```
 git clone https://github.com/iarenzana/urbanobot
 cd urbanobot
-go get
 go build
-PORT=60000 ./urbanobot.go
+URBANO_DOMAIN=urbano.example.org ./urbanobot.go
 ```
 
 Usage

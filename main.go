@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,25 +13,43 @@ import (
 
 	"github.com/gorilla/mux"
 	"gitlab.com/iarenzana/urbanobot/objects"
+	"golang.org/x/crypto/acme/autocert"
 )
 
-const version = "0.6"
+const version = "1.0"
 
 func main() {
 
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/v1/word", getWord)
-	router.HandleFunc("/v1/random", getRandomWord)
-	log.Printf("Starting up urbanobot %v...\n", version)
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		log.Fatal("$PORT must be set")
+	//Check for the domain
+	domain := os.Getenv("URBANO_DOMAIN")
+	if domain == "" {
+		log.Fatal("$URBANO_DOMAIN must be set")
+	}
+	//Get certificate and store it under /usr/local/etc. Auto-renewed.
+	certManager := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist(domain),
+		Cache:      autocert.DirCache("/usr/local/etc/urbanobot/urbanocerts"),
 	}
 
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	router := mux.NewRouter().StrictSlash(true)
 
-	log.Print("Server started on port " + port)
+	router.HandleFunc("/v1/word", getWord)
+	router.HandleFunc("/v1/random", getRandomWord)
+
+	log.Printf("Starting up urbanobot %v...\n", version)
+
+	//Start server on the https port
+	server := &http.Server{
+		Addr:    ":443",
+		Handler: router,
+		TLSConfig: &tls.Config{
+			GetCertificate: certManager.GetCertificate,
+		},
+	}
+	log.Fatal(server.ListenAndServeTLS("", ""))
+
+	log.Print("Server started")
 }
 
 //GetWord
