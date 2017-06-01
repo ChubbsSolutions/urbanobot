@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-const version = "1.0"
+const version = "1.1"
 
 func main() {
 
@@ -25,6 +25,7 @@ func main() {
 	if domain == "" {
 		log.Fatal("$URBANO_DOMAIN must be set")
 	}
+		
 	//Get certificate and store it under /usr/local/etc. Auto-renewed.
 	certManager := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
@@ -34,8 +35,8 @@ func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/v1/word", getWord)
-	router.HandleFunc("/v1/random", getRandomWord)
+	router.HandleFunc("/urbano/v1/word", getWord)
+	router.HandleFunc("/urbano/v1/random", getRandomWord)
 
 	log.Printf("Starting up urbanobot %v...\n", version)
 
@@ -63,6 +64,29 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 	slackTeam := r.URL.Query().Get("team_id")
 	log.Print("Request received for " + word + " from " + slackUser + ", from team " + slackTeam + ", on channel " + slackChannel)
 
+	if word == "" {
+		w.WriteHeader(http.StatusOK)
+		response := objects.SlackResponse{}
+		response.Text = "Screw you, @barnes. Happy now?"
+		response.ResponseType = "in_channel"
+		response.BotVersion = version
+
+		resp, err := json.Marshal(response)
+		if err != nil {
+			resp, err := json.Marshal(response)
+			if err != nil {
+				log.Println("Error Marshalling response!")
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			w.Write(resp)
+			return
+
+		}
+		w.Write(resp)
+
+	}
 	wordDefinition, err := getWordDefinition(word)
 	if fmt.Sprintf("%s", err) == "NOTFOUND" {
 		log.Println("Word " + word + " not found.")
