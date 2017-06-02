@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.2] - 2017-602
+### Added
+- Support for Mattermost
+
 ## [1.0.0] - 2016-12-20
 ### Added
 - TLS-only communication

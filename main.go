@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ajg/form"
 	"github.com/gorilla/mux"
 	"gitlab.com/iarenzana/urbanobot/objects"
 	"golang.org/x/crypto/acme/autocert"
@@ -55,28 +56,37 @@ func main() {
 
 //GetWord
 func getWord(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+
 	var word, slackUser, slackChannel, slackTeam string
 
 	if strings.Contains(r.Header.Get("User-Agent"), "Slackbot") {
-
+		w.Header().Set("Content-Type", "application/json")
 		word = r.URL.Query().Get("text")
 
 		slackUser = r.URL.Query().Get("user_name")
 		slackChannel = r.URL.Query().Get("channel_name")
 		slackTeam = r.URL.Query().Get("team_id")
+
 		log.Print("Slack request received for " + word + " from " + slackUser + ", from team " + slackTeam + ", on channel " + slackChannel)
 	} else {
+		w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+		var u objects.SlackIncoming
 
-		word = r.FormValue("text")
-		slackUser = r.FormValue("user_name")
-		slackChannel = r.FormValue("channel_name")
-		slackTeam = r.FormValue("team_id")
+		d := form.NewDecoder(r.Body)
+		if err2 := d.Decode(&u); err2 != nil {
+			fmt.Printf("Form could not be decoded - %v", err2)
+			return
+		}
+
+		word = u.Text
+		slackUser = u.SlackUser
+		slackChannel = u.SlackChannel
+		slackTeam = u.SlackTeam
+
 		log.Print("Other request received for " + word + " from " + slackUser + ", from team " + slackTeam + ", on channel " + slackChannel)
 	}
 
 	if word == "" {
-		w.WriteHeader(http.StatusOK)
 		response := objects.SlackResponse{}
 		response.Text = "Screw you, @barnes. Happy now?"
 		response.ResponseType = "in_channel"
@@ -84,26 +94,28 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := json.Marshal(response)
 		if err != nil {
-			resp, err := json.Marshal(response)
-			if err != nil {
-				log.Println("Error Marshalling response!")
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-
+			log.Println("Error Marshalling response!")
+			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(resp)
 			return
 
 		}
+
+		w.WriteHeader(http.StatusOK)
 		w.Write(resp)
+		return
 
 	}
 	wordDefinition, err := getWordDefinition(word)
 	if fmt.Sprintf("%s", err) == "NOTFOUND" {
 		log.Println("Word " + word + " not found.")
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusOK)
 
-		response := objects.Response{Response: "Word not Found", BotVersion: version}
+		response := objects.SlackResponse{}
+		response.Text = fmt.Sprintf("%s - Word not found", word)
+		response.ResponseType = "ephemeral"
+		response.BotVersion = version
+
 		resp, err := json.Marshal(response)
 		if err != nil {
 			log.Println("Error Marshalling response!")
@@ -125,7 +137,7 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	response := objects.SlackResponse{}
-	response.Text = wordDefinition.Definition
+	response.Text = fmt.Sprintf("%s --> %s", word, wordDefinition.Definition)
 	response.ResponseType = "in_channel"
 	response.BotVersion = version
 

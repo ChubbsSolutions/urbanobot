@@ -4,6 +4,20 @@ package objects
 type WordDataSlice struct {
 	List []WordData `json:"list"`
 }
+
+type SlackIncoming struct {
+	Text         string `form:"text"`
+	SlackUser    string `form:"user_name"`
+	SlackChannel string `form:"channel_name"`
+	SlackTeam    string `form:"team_id"`
+	Token        string `form:"token"`
+	Channel_id   string `form:"channel_id"`
+	Command      string `form:"command"`
+	Response_url string `form:"response_url"`
+	Team_domain  string `form:"team_domain"`
+	User_id      string `form:"user_id"`
+}
+
 type Response struct {
 	Response   string `json:"response"`
 	BotVersion string `json:"bot_version"`
