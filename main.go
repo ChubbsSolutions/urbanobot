@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-const version = "1.1"
+const version = "1.2"
 
 func main() {
 
@@ -25,7 +25,7 @@ func main() {
 	if domain == "" {
 		log.Fatal("$URBANO_DOMAIN must be set")
 	}
-		
+
 	//Get certificate and store it under /usr/local/etc. Auto-renewed.
 	certManager := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
@@ -56,13 +56,24 @@ func main() {
 //GetWord
 func getWord(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	var word, slackUser, slackChannel, slackTeam string
 
-	word := r.URL.Query().Get("text")
+	if strings.Contains(r.Header.Get("User-Agent"), "Slackbot") {
 
-	slackUser := r.URL.Query().Get("user_name")
-	slackChannel := r.URL.Query().Get("channel_name")
-	slackTeam := r.URL.Query().Get("team_id")
-	log.Print("Request received for " + word + " from " + slackUser + ", from team " + slackTeam + ", on channel " + slackChannel)
+		word = r.URL.Query().Get("text")
+
+		slackUser = r.URL.Query().Get("user_name")
+		slackChannel = r.URL.Query().Get("channel_name")
+		slackTeam = r.URL.Query().Get("team_id")
+		log.Print("Slack request received for " + word + " from " + slackUser + ", from team " + slackTeam + ", on channel " + slackChannel)
+	} else {
+
+		word = r.FormValue("text")
+		slackUser = r.FormValue("user_name")
+		slackChannel = r.FormValue("channel_name")
+		slackTeam = r.FormValue("team_id")
+		log.Print("Other request received for " + word + " from " + slackUser + ", from team " + slackTeam + ", on channel " + slackChannel)
+	}
 
 	if word == "" {
 		w.WriteHeader(http.StatusOK)
