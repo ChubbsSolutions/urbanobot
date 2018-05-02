@@ -1,0 +1,12 @@
+[Unit]
+Description=urbanobot
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/urbanobot >> /var/log/urbanobot.log 2>&1
+Restart=true
+
+[Install]
+WantedBy=multi-user.target
