@@ -1,17 +1,19 @@
 hash: d4f80890f9b3a1bc8215233087cd97ccf19d6cdc4ec5e88a34173ea3c34d69b9
-updated: 2016-12-20T14:22:55.962494954+01:00
+updated: 2018-05-01T12:32:43.038987-04:00
 imports:
+- name: github.com/ajg/form
+  version: 523a5da1a92f01b01f840b61689c0340a0243532
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
-  version: 0eeaf8392f5b04950925b8a69fe70f110fa7cbfc
+  version: 53c1911da2b537f792e7cafcb446b05ffe33b996
 - name: golang.org/x/crypto
-  version: 2b786ab9e9649dc660afa3bd580fd05a05e20d95
+  version: 3c0d69f1777220f1a1d2ec373cb94a282f03eb42
   subpackages:
   - acme
   - acme/autocert
 - name: golang.org/x/net
-  version: 45e771701b814666a7eb299e6c7a57d0b1799e91
+  version: 5f9ae10d9af5b1c89ae6904293b14b064d4ada23
   subpackages:
   - context
   - context/ctxhttp

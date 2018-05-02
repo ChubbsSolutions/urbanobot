@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -17,41 +18,48 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-const version = "1.2"
+const version = "1.2.2"
 
 func main() {
 
-	//Check for the domain
-	domain := os.Getenv("URBANO_DOMAIN")
-	if domain == "" {
-		log.Fatal("$URBANO_DOMAIN must be set")
-	}
-
-	//Get certificate and store it under /usr/local/etc. Auto-renewed.
-	certManager := autocert.Manager{
-		Prompt:     autocert.AcceptTOS,
-		HostPolicy: autocert.HostWhitelist(domain),
-		Cache:      autocert.DirCache("/usr/local/etc/urbanobot/urbanocerts"),
-	}
+	useTLS := flag.Bool("https", false, "use https by default.")
+	usePort := flag.Int("port", 61000, "Port to use. Ignored if TLS is enabled.")
+	flag.Parse()
 
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/urbano/v1/word", getWord)
 	router.HandleFunc("/urbano/v1/random", getRandomWord)
 
-	log.Printf("Starting up urbanobot %v...\n", version)
+	if *useTLS {
+		//Check for the domain
+		domain := os.Getenv("URBANO_DOMAIN")
+		if domain == "" {
+			log.Fatal("$URBANO_DOMAIN must be set")
+		}
+		log.Printf("Starting up urbanobot %v on %v using https...\n", version, domain)
+		//Get certificate and store it under /usr/local/etc. Auto-renewed.
+		certManager := &autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: autocert.HostWhitelist(domain),
+			Cache:      autocert.DirCache("/usr/local/etc/urbanobot/urbanocerts"),
+		}
 
-	//Start server on the https port
-	server := &http.Server{
-		Addr:    ":443",
-		Handler: router,
-		TLSConfig: &tls.Config{
-			GetCertificate: certManager.GetCertificate,
-		},
+		//Start server on the https port
+		server := &http.Server{
+			Addr:    ":https",
+			Handler: router,
+			TLSConfig: &tls.Config{
+				GetCertificate: certManager.GetCertificate,
+			},
+		}
+		log.Fatal(server.ListenAndServeTLS("", ""))
+
+	} else {
+		log.Printf("Starting up urbanobot %v on port %v...\n", version, *usePort)
+
+		log.Fatal(http.ListenAndServe(":"+fmt.Sprintf("%v", *usePort), router))
 	}
-	log.Fatal(server.ListenAndServeTLS("", ""))
-
-	log.Print("Server started")
 }
 
 //GetWord
@@ -128,7 +136,7 @@ func getWord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		log.Print("Error - %v\n", err)
+		log.Print("Error ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -201,7 +209,7 @@ func getRandomWord(w http.ResponseWriter, r *http.Request) {
 
 	wordDefinition, err := getNewWord()
 	if err != nil {
-		log.Print("Error - %v\n", err)
+		log.Print("Error ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
